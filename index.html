@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Lirik Animation | AbyyIenzz </title>
+    <title>Lirik Animation | AbyyIenzz</title>
     <link type="text/css" rel="stylesheet" href="file/default.css">
     <script type="text/javascript" src="file/jquery.min.js"></script>
     <script type="text/javascript" src="file/jscex.min.js"></script>
@@ -15,10 +15,54 @@
     <script type="text/javascript" src="file/function.js" charset="utf-8"></script>
     <script type="text/javascript" src="file/love.js" charset="utf-8"></script>
     <script>
+        var audioOffset = 0;
+        function updateOffsetDisplay() {
+            var el = document.getElementById('offsetDisplay');
+            if (el) el.textContent = (audioOffset >= 0 ? '+' : '') + audioOffset.toFixed(2) + 's';
+        }
+
         function playAudio() {
             var audio = document.getElementById("myAudio");
+            try {
+                // try to set position; some browsers may throw if not allowed
+                if (!isNaN(audioOffset) && audio.duration && audioOffset <= audio.duration) {
+                    audio.currentTime = Math.max(0, audioOffset);
+                } else if (!isNaN(audioOffset) && !audio.duration) {
+                    // not loaded yet — set when canplay
+                    var once = function () {
+                        try { audio.currentTime = Math.max(0, audioOffset); } catch (e) { }
+                        audio.removeEventListener('canplay', once);
+                    };
+                    audio.addEventListener('canplay', once);
+                }
+            } catch (e) {
+                // ignore and attempt to play anyway
+            }
             audio.play();
         }
+
+        function setAudioOffset(s) {
+            audioOffset = parseFloat(s) || 0;
+            localStorage.setItem('audioOffset', audioOffset);
+            updateOffsetDisplay();
+        }
+
+        function adjustAudioOffset(delta) {
+            setAudioOffset((audioOffset + delta).toFixed(2));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var saved = localStorage.getItem('audioOffset');
+            if (saved !== null) audioOffset = parseFloat(saved) || 0;
+            updateOffsetDisplay();
+            // wire up buttons if present
+            var btnMinus = document.getElementById('offsetMinus');
+            var btnPlus = document.getElementById('offsetPlus');
+            var btnPreview = document.getElementById('offsetPreview');
+            if (btnMinus) btnMinus.addEventListener('click', function () { adjustAudioOffset(-0.5); });
+            if (btnPlus) btnPlus.addEventListener('click', function () { adjustAudioOffset(0.5); });
+            if (btnPreview) btnPreview.addEventListener('click', function () { playAudio(); });
+        });
     </script>
 </head>
 
@@ -31,6 +75,13 @@
             <source src="aud.mp3" type="audio/mp3" />
             <embed height="100" width="100" src="aud.mp3" />
         </audio>
+        <div id="sync-controls">
+            <button id="offsetMinus">-0.5s</button>
+            <button id="offsetPlus">+0.5s</button>
+            <button id="offsetPreview">Preview</button>
+            <span id="offsetLabel">Offset:</span>
+            <span id="offsetDisplay">+0.00s</span>
+        </div>
         <div id="wrap">
             <div id="text">
                 <div id="code">
