@@ -22,7 +22,7 @@ a {
   margin-top: 10px;
 }
 #text {
-  width: 340px;
+  width: 272px;
   height: 560px;
   left: 188px;
   top: 80px;
@@ -31,11 +31,11 @@ a {
 #code {
   display: none;
   color: black;
-  font-size: 15px;
+  font-size: 16px;
   margin-top: 70px;
-  line-height: 24px;
+  line-height: 25px;
+  font-size: larger;
   font-weight: bolder;
-  width: 320px;
 }
 #clock-box {
   position: absolute;
@@ -69,7 +69,6 @@ a {
   cursor: pointer;
 }
 .say {
-  display: block;
   margin-left: 5px;
 }
 .space {
@@ -83,4 +82,3 @@ a {
   font-family: monospace;
 
 }
-/* sync controls removed */
