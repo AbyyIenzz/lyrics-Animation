@@ -20,6 +20,14 @@
         // Negative -> start audio that many seconds earlier into the track
         var lyricAudioOffset = 0; // change this number if you need an offset
 
+        function playAudio() {
+            // For manual clicks: just play the audio
+            var audio = document.getElementById("myAudio");
+            if (audio) {
+                try { audio.play(); } catch (e) { }
+            }
+        }
+
         function playAudioWithOffset() {
             var audio = document.getElementById("myAudio");
             if (!audio) return;
