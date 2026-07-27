@@ -56,6 +56,24 @@
 </head>
 
 <body>
+    <div id="pin-verification" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: Arial, sans-serif;">
+        <div style="background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 style="margin: 0 0 10px 0; color: #333; font-size: 24px;">MASUKAN PIN NYA BG</h2>
+            <p style="color: #666; margin: 0 0 30px 0; font-size: 14px;">Masukin PIN biar bisa lanjut 😊</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                <input type="text" id="pin0" class="pin-input" maxlength="1" style="width: 50px; height: 50px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-weight: bold;">
+                <input type="text" id="pin1" class="pin-input" maxlength="1" style="width: 50px; height: 50px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-weight: bold;">
+                <input type="text" id="pin2" class="pin-input" maxlength="1" style="width: 50px; height: 50px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-weight: bold;">
+                <input type="text" id="pin3" class="pin-input" maxlength="1" style="width: 50px; height: 50px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-weight: bold;">
+                <input type="text" id="pin4" class="pin-input" maxlength="1" style="width: 50px; height: 50px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-weight: bold;">
+                <input type="text" id="pin5" class="pin-input" maxlength="1" style="width: 50px; height: 50px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-weight: bold;">
+            </div>
+            <p id="pin-error" style="color: #e74c3c; font-weight: bold; margin-bottom: 20px; display: none;">PIN salah! Coba lagi 😭</p>
+            <button id="pin-submit" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Masuk</button>
+        </div>
+    </div>
+
+    <div id="love-content" style="display: none;">
     <div id="main">
         <div id="error"><a
                 href="http://www.google.cn/chrome/intl/zh-CN/landing_chrome.html?hl=zh-CN&brand=CHMI">Chrome</a> (<a
@@ -80,12 +98,67 @@
             <canvas id="canvas" width="1100" height="680"></canvas>
         </div>
     </div>
+    </div>
 
     <script>
-        (function () {
+        // PIN Verification Logic
+        var correctPin = "261009"; // 26 Oktober 2009
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var pinInputs = document.querySelectorAll('.pin-input');
+            var submitBtn = document.getElementById('pin-submit');
+            var errorMsg = document.getElementById('pin-error');
+            
+            // Auto-focus next input
+            pinInputs.forEach(function (input, index) {
+                input.addEventListener('input', function () {
+                    if (this.value.length === 1 && index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                        pinInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            submitBtn.addEventListener('click', function () {
+                var enteredPin = Array.from(pinInputs).map(function (el) { return el.value; }).join('');
+                
+                if (enteredPin === correctPin) {
+                    // PIN benar, tampilkan love animation
+                    document.getElementById('pin-verification').style.display = 'none';
+                    document.getElementById('love-content').style.display = 'block';
+                    
+                    // Initialize love animation
+                    initializeLoveAnimation();
+                } else {
+                    // PIN salah, tampilkan error
+                    errorMsg.style.display = 'block';
+                    pinInputs.forEach(function (input) { input.value = ''; });
+                    pinInputs[0].focus();
+                    
+                    setTimeout(function () {
+                        errorMsg.style.display = 'none';
+                    }, 3000);
+                }
+            });
+            
+            // Allow Enter key to submit
+            pinInputs[pinInputs.length - 1].addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                }
+            });
+        });
+        
+        function initializeLoveAnimation() {
+            // Main love animation code starts here
             var canvas = $('#canvas');
-
-            if (!canvas[0].getContext) {
+            
+            setTimeout(function () {
                 $("#error").show();
                 return false;
             }
@@ -213,7 +286,7 @@
             }));
 
             runAsync().start();
-        })();
-    </script>
+            }, 100);
+        }
 </body>
 </html>
